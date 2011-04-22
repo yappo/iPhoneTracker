@@ -1,0 +1,38 @@
+<html><head>
+<title>iPhone Tracker Stream</title>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="/js/DUI.js"></script>
+<script type="text/javascript" src="/js/Stream.js"></script>
+ <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=true&amp;key=ABQIAAAAc8T4T0aeEX2Fl41nrL30hRQqonak3wFvFgnMSHDtYzz7qxhaQxTx39gIoGXdNsrd19j09L-6Vlaf4A" type="text/javascript"></script>
+<script type="text/javascript">
+$(function() {
+  var map = new GMap2(document.getElementById("map"));
+  if (GBrowserIsCompatible()) {
+    map.setCenter(new GLatLng(33, 130), 13);
+  }
+  map.addControl(new GSmallMapControl());
+  map.addControl(new GMapTypeControl());
+  map.addControl(new GScaleControl());
+  map.enableScrollWheelZoom();
+
+  var s = new DUI.Stream();
+  s.listen('application/javascript', function(payload) {
+    eval('var json = ' + payload);
+
+    var point = new GLatLng(json.lat, json.lon);
+    map.setCenter(point);
+    var mp = new GLatLng(point.lat(), point.lng());
+
+    map.setCenter(mp);
+    map.openInfoWindow(map.getCenter(), json.time);
+  });
+  s.load('/stream');
+});
+</script>
+</head>
+<body>
+<h1>iPhone Tracker Stream</h1>
+<div id="map" style="width:100%; height:400px"></div>
+<div id="content"></div>
+</body>
+</html>
